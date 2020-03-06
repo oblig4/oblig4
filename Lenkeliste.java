@@ -10,6 +10,30 @@ public class Lenkeliste<T> implements Liste<T> {
       this.innhold = innhold;
     }
   }
+  
+  private class LenkeListeIterator implements Iterator<T> {
+
+    private T gjeldendeElement; // variabel som holder på det elementet iteratoren er på.
+
+    public LenkeListeIterator() {
+      gjeldendeElement = start;
+    }
+
+    @Override
+    public T next() {
+      gjeldendeElement = gjeldendeElement.neste;
+      return gjeldendeElement.innhold;
+    }
+
+    @Override
+    public boolean hasNext() {
+      return gjeldendeElement != slutt.forrige;
+    }
+  }
+  
+  public Iterator<T> iterator() {
+    return new LenkeListeIterator();
+  }
 
   public Lenkeliste() {
     stoerrelse = 0;
