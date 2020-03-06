@@ -1,15 +1,17 @@
 class Pasient{
     private String PasientNavn;
     private String foedselnummer;
-
-    static int pasientid = 0;
+    
+    protected int pasientId;
+    private static int teller = 0;
     Stabel<Resept> resept = new Stabel<>();
 
     public Pasient(String pn, String fnr){
         PasientNavn = pn;
         foedselnummer = fnr;
 
-        pasientid ++;
+        pasientId = teller;
+        teller ++;
     }
 
     void leggTilResept(Resept nyResept)
@@ -24,11 +26,12 @@ class Pasient{
         return foedselnummer;
     }
     public int hentPasientId(){
-        return pasientid;
+        return pasientId;
     }
-    public String toString(){
-        return "\nPasient navn: " + PasientNavn +
-                "\nFoedselsnummer: " + foedselnummer +
-                "\nPasient ID: " + pasientid;
+
+    public String toString() {
+        return "\nPasient navn: " + PasientNavn + 
+                "\nFoedselsnummer: " + foedselnummer + 
+                "\nPasient ID: " + pasientId;
     }
 }
