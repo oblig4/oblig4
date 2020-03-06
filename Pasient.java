@@ -26,4 +26,9 @@ class Pasient{
     public int hentPasientId(){
         return pasientid;
     }
+    public String toString(){
+        return "\nPasient navn: " + PasientNavn +
+                "\nFoedselsnummer: " + foedselnummer +
+                "\nPasient ID: " + pasientid;
+    }
 }
