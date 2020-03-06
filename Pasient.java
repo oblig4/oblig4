@@ -16,7 +16,7 @@ class Pasient{
 
     void leggTilResept(Resept nyResept)
     {
-        this.resept.leggPaa(nyResept);
+        resept.leggPaa(nyResept);
     }
 
     public String hentPasientNavn(){
