@@ -1,6 +1,6 @@
 class Lege implements Comparable<Lege> {
   protected String legensNavn;
-  protected Lenkeliste<Resept> utskrevedeResepter;
+  protected Lenkeliste<Resept> utskrevedeResepter; //lager en instans av Lenkeliste
 
   public Lege(String legensNavn) {
     this.legensNavn = legensNavn;
@@ -21,11 +21,13 @@ class Lege implements Comparable<Lege> {
     return legensNavn.compareTo(other.hentNavn());
   }
 
+  //returnerer listen
   public Lenkeliste<Resept> hentReseptliste() {
     return utskrevedeResepter;
   }
 
   public HvitResept skrivHvitResept(Legemiddel legemiddel, Pasient pasient, int reit) throws UlovligUtskrift {
+    //leger skal ikke kunne skrive ut resept på narkotiske legemidler
     if (legemiddel instanceof Narkotisk) {
       throw new UlovligUtskrift(this, legemiddel);
     }
