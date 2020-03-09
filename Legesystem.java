@@ -7,6 +7,8 @@ public class Legesystem {
   private Lenkeliste<Pasient> pasienter;
   private Lenkeliste<Legemiddel> legemidler;
   private String filnavn;
+  private static int UtskrevetVannLg = 0;
+  private static int UtskrevetMilitaerVannLg = 0;
 
 
   public Legesystem(String filnavn) throws FileNotFoundException, UlovligUtskrift {
@@ -507,5 +509,55 @@ public class Legesystem {
       System.out.println(legemidlerElement);
     }
   }
+  
+      public void Statistikk(){
+
+        //Totalt antall utskrevne resepter på vanedannende legemidler ??????
+        System.out.println("Totalt antall utskrevne resepter på vanedannende legemidler: " + UtskrevetVannLg);
+
+        //Totalt antall utskrevne resepter på narkotiske legemidler ??????
+        System.out.println("Vanedannende legemidler utskrevet til militaeret: " + UtskrevetMilitaerVannLg);
+
+
+        //antall natkotiske resepter per lege
+        System.out.println("Antall narkotiske legemidler hver lege har skrevet ut:");
+        for(Lege lege : leger){//List av navnene på alle leger
+            System.out.println(lege.hentNavn() + ": " + lege.skrivNarkotiskResept().stoerrelse()); //antall uskrevet narkotisk resepter
+
+            
+            //antall pasienter som har minst en gyldig resept
+            System.out.println("Antall gyldige resepter på narkotiske legemidler hver pasient har:");
+            boolean harNarkotisk = false;
+            for(Pasient pasient : pasienter){//List av navnene på alle pasienter
+                Lenkeliste<Resept> narkotiskeResepter = new Lenkeliste <>(); //lager en lenkeliste av narkotiske resepter
+            
+                for(Resept resept : pasient.hentReseptListe()){ //hente Resepter er pasient
+                    narkotiskeResepter.leggTil(resept);
+                    }
+
+                if(narkotiskeResepter.stoerrelse() > 0) {
+                    System.out.println(pasient.hentPasientNavn() + ": " + narkotiskeResepter.stoerrelse());
+                    harNarkotisk = true;
+                }
+                if(!harNarkotisk){
+                    System.out.println("Ingen har gyldige narkotiske resepter.");
+                }
+            }
+        }
+    }
+
+
+    public void brukResept(){
+        for(Pasient pasient : pasienter){
+            for(Resept resept : pasient.hentReseptListe()){
+                if(resept.hentReit() > 0){
+                    resept.bruk();
+                    System.out.println("Brukte​ resept paa ​" + resept.hentLegemiddel().hentNavn() + " gjenvaerende reit: " + resept.hentReit());
+                }else{
+                    System.out.println("Kunne​ ikke bruke resept paa " + resept.hentLegemiddel().hentNavn() + "(​ingen gjenvaerende reit​)");
+                }
+            }
+        }
+    }
   
 }
