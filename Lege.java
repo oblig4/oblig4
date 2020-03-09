@@ -70,4 +70,14 @@ class Lege implements Comparable<Lege> {
 
     return nyResept;
   }
+  
+    public void skrivNarkotiskResept(){
+    Lenkeliste<Resept> narkotiskResept = new Lenkeliste<>();
+
+    for(Resept resept : utskrevedeResepter){
+      if(resept.hentLegemiddel() instanceof Narkotisk){
+        narkotiskResept.leggTil(resept);
+      }
+    }
+  }
 }
