@@ -1,6 +1,7 @@
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
+import java.io.PrintWriter;
 
 public class Legesystem {
   private SortertLenkeliste<Lege> leger;
@@ -18,7 +19,7 @@ public class Legesystem {
     this.filnavn = filnavn;
 
     lesFraFil(filnavn);
-    //hovedmeny();
+    hovedmeny();
   }
 
 
