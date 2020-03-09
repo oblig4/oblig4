@@ -71,7 +71,7 @@ class Lege implements Comparable<Lege> {
     return nyResept;
   }
   
-    public void skrivNarkotiskResept(){
+  public Lenkeliste<Resept> skrivNarkotiskResept(){
     Lenkeliste<Resept> narkotiskResept = new Lenkeliste<>();
 
     for(Resept resept : utskrevedeResepter){
@@ -79,5 +79,6 @@ class Lege implements Comparable<Lege> {
         narkotiskResept.leggTil(resept);
       }
     }
+    return narkotiskResept;
   }
 }
