@@ -35,7 +35,7 @@ class Pasient{
                 "\nPasient ID: " + pasientId;
     }
     
-    public Lenkeliste<Resept> hentReseptListe() {
+    public Stabel<Resept> hentReseptListe() {
         return resept;
     }
 }
