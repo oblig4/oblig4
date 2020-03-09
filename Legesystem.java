@@ -489,11 +489,12 @@ public class Legesystem {
       kommando = scanner.nextInt();
       printHovedmeny();
     }
+    scanner.close();
   }
   
   public void skrivUtInfo() {
     System.out.println("Skriver ut leger: ");
-    for (Leger legeElement : leger) {
+    for (Lege legeElement : leger) {
       System.out.println(legeElement);
     }
 
@@ -506,12 +507,12 @@ public class Legesystem {
     }
 
     System.out.println("Skriver ut legemiddler: ");
-    for (Leger legemidlerElement : legemidler) {
+    for (Legemiddel legemidlerElement : legemidler) {
       System.out.println(legemidlerElement);
     }
   }
   
-      public void Statistikk(){
+      public void statistikk(){
 
         //Totalt antall utskrevne resepter på vanedannende legemidler ??????
         System.out.println("Totalt antall utskrevne resepter på vanedannende legemidler: " + UtskrevetVannLg);
