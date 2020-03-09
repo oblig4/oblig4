@@ -444,9 +444,68 @@ public class Legesystem {
 
       }
 
-
     }
 
   }
+  
+  private void printHovedmeny() {
+    System.out.println("Velg kommando ved å skrive inn tilsvarende tall. \n ");
+    System.out.println("0: Avslutte programmet. ");
+    System.out.println("1: Skrive oversikt over pasienter, leger, legemiddler, og resepter.");
+    System.out.println("2: Opprette og legge til nye elementer i systemet. ");
+    System.out.println("3: Bruke en gitt resept fra listen til en pasient. ");
+    System.out.println("4: Skrive ut forskjellige former for statistikk. ");
+    System.out.println("5: Skrive alle data til fil. ");
+  }
+  
+  public void hovedmeny() {
+    Scanner scanner = new Scanner(System.in);
 
+    System.out.println("Hovedmeny: ");
+    printHovedmeny();
+    int kommando = scanner.nextInt();
+
+    while (kommando != 0) {
+
+      if (kommando == 1) { // oppgave E3
+        skrivUtInfo();
+      }
+      if (kommando == 2) { // oppgave E4
+        brukerLeggTil();
+      }
+      if (kommando == 3) { // oppgave E5
+        brukResept();
+      }
+      if (kommando == 4) { // oppgave E6
+        System.out.println("Printer ut starisikk: ");
+        statistikk();
+      }
+      if (kommando == 5) { // oppgave E8
+
+      }
+      kommando = scanner.nextInt();
+      printHovedmeny();
+    }
+  }
+  
+  public void skrivUtInfo() {
+    System.out.println("Skriver ut leger: ");
+    for (Leger legeElement : leger) {
+      System.out.println(legeElement);
+    }
+
+    System.out.println("Skriver ut pasienter og deres resepter: ");
+    for (Pasient pasientElement : pasienter) {
+      System.out.println(pasientElement);
+      for (Resept resept : pasientElement.hentReseptListe()) {
+        System.out.println(resept);
+      }
+    }
+
+    System.out.println("Skriver ut legemiddler: ");
+    for (Leger legemidlerElement : legemidler) {
+      System.out.println(legemidlerElement);
+    }
+  }
+  
 }
