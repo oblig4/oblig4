@@ -1,13 +1,13 @@
 abstract class Resept {
   protected Legemiddel legemiddel;
   protected Lege utskrivendeLege;
-  protected int pasientId;
+  protected Pasient pasient;
   protected int reit;
   protected static int id = 0;
   protected int resptId;
 
 
-  public Resept(Legemiddel legemiddel, Lege utskrivendeLege, int pasientId, int reit) {
+  public Resept(Legemiddel legemiddel, Lege utskrivendeLege, Pasient pasient, int reit) {
     this.legemiddel = legemiddel;
     this.utskrivendeLege = utskrivendeLege;
     this.pasientId = pasientId;
@@ -28,8 +28,8 @@ abstract class Resept {
     return utskrivendeLege;
   }
 
-  public int hentPasientId() {
-    return pasientId;
+  public Pasient hentPasientId() {
+    return pasient;
   }
 
   public int hentReit() {
@@ -50,7 +50,7 @@ abstract class Resept {
 
   @Override
   public String toString() {
-    return "Resept ID: " + hentId() + "\n" + legemiddel.toString() + "\n" + utskrivendeLege.toString() + "\nPasient ID: " + pasientId + "\nReit: " + reit;
+    return "Resept ID: " + hentId() + "\n" + legemiddel.toString() + "\n" + utskrivendeLege.toString() + "\n pasient.hentPasientNavn(): " + pasient + "\nReit: " + reit;
   }
 
 }
