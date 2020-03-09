@@ -533,7 +533,7 @@ public class Legesystem {
                 Lenkeliste<Resept> narkotiskeResepter = new Lenkeliste <>(); //lager en lenkeliste av narkotiske resepter
             
                 for(Resept resept : pasient.hentReseptListe()){ //hente Resepter er pasient
-                    narkotiskeResepter.leggTil(resept);
+                    narkotiskeResepter.append(resept);
                     }
 
                 if(narkotiskeResepter.stoerrelse() > 0) {
