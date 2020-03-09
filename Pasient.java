@@ -34,4 +34,8 @@ class Pasient{
                 "\nFoedselsnummer: " + foedselnummer + 
                 "\nPasient ID: " + pasientId;
     }
+    
+    public Lenkeliste<Resept> hentReseptListe() {
+        return resept;
+    }
 }
