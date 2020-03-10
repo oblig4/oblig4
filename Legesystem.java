@@ -549,17 +549,46 @@ public class Legesystem {
     }
 
 
-    public void brukResept(){
-        for(Pasient pasient : pasienter){
-            for(Resept resept : pasient.hentReseptListe()){
-                if(resept.hentReit() > 0){
-                    resept.bruk();
-                    System.out.println("Brukte​ resept paa ​" + resept.hentLegemiddel().hentNavn() + " gjenvaerende reit: " + resept.hentReit());
-                }else{
-                    System.out.println("Kunne​ ikke bruke resept paa " + resept.hentLegemiddel().hentNavn() + "(​ingen gjenvaerende reit​)");
-                }
-            }
-        }
+  private void brukResept() {
+    System.out.println("Hvilken pasient vil du se resepter for?");
+
+    int pasientMedReseptNummer = 0; //teller pasienter med resept nummer
+    Lenkeliste<Pasient> pasienterMedResept = new Lenkeliste<>(); //list for pasienter som har resept
+
+    for (Pasient pasient : pasienter) { //går gjennom alle pasienter
+      if (pasient.hentReseptListe().stoerrelse() > 0) { //hvis resepter på en pasien er større enn null
+        System.out.println(pasientMedReseptNummer + ": " + pasient.hentPasientNavn() + " (fnr" + pasient.hentFoedselnummer() + ")");
+        pasienterMedResept.leggTil(pasient); //legger vi pasienten in i lista
+        pasientMedReseptNummer++; 
+      }
     }
-  
+    if (pasienterMedResept.stoerrelse() > 0) { //hvis størrelsen til lista er større enn null
+      int valgtPasientNummer;
+      valgtPasientNummer = parseInt(input.nextLine()); //spørre man om pasient nr. som input
+
+
+      if (valgtPasientNummer >= 0 && valgtPasientNummer < pasienterMedResept.stoerrelse()) { //hvis input er større eller lik null og mindre enn størrelse til lista
+        Pasient valgtPasient = pasienterMedResept.hent(valgtPasientNummer); //henter pasient info
+        System.out.println("Valgt pasient: " + valgtPasient.hentPasientNavn() + " (fnr"+ valgtPasient.hentFoedselnummer()+ ")\n" + "Hvilken resept vil du bruke?");
+
+        int reseptNummer = 0; //teller nummeret til resept
+        for (Resept resept : valgtPasient.hentReseptListe()) { //velger resept til pasienten
+          System.out.println(reseptNummer + ": " + resept.hentLegemiddel().hentNavn() + " (" + resept.hentReit() + " reit)");
+          reseptNummer++;
+        }
+
+        int valgtReseptNummer;
+        valgtReseptNummer = parseInt(input.nextLine()); //hvilken resept som velges ved input
+
+        
+        try {
+          Resept valgtResept = valgtPasient.hentReseptListe().hent(valgtReseptNummer);
+
+              System.out.println("Brukte resept paa " + valgtResept.hentLegemiddel().hentNavn() + ". Antall gjenverende reit: " + valgtResept.hentReit());
+          }catch(Exception e){
+              System.out.println("Ikke gyldig input.");
+          }
+      } 
+    }
+  }
 }
