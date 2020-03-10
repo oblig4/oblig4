@@ -10,6 +10,7 @@ public class Legesystem {
   private String filnavn;
   private static int UtskrevetVannLg = 0;
   private static int UtskrevetMilitaerVannLg = 0;
+  private static Scanner input;
 
 
   public Legesystem(String filnavn) throws FileNotFoundException, UlovligUtskrift {
