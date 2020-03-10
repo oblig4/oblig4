@@ -598,47 +598,69 @@ public class Legesystem {
 
 public void skrivUtInfo() {
     System.out.println("Skriver ut leger: ");
-    for (int i = 0; i < leger.stoerrelse(); i++) {
-      System.out.println(leger.hent(i));
-      System.out.println(leger.hent(i).hentReseptliste().stoerrelse());
+    if (leger.stoerrelse() != 0) {
+      for (int i = 0; i < leger.stoerrelse(); i++) {
+        System.out.println(leger.hent(i));
+        System.out.println(leger.hent(i).hentReseptliste().stoerrelse());
+      }
+    }
+    else {
+      System.out.println("Ingen leger i listen.");
     }
 
     System.out.println("\nSkriver ut pasienter og deres resepter: ");
-    for (int i = 0; i < pasienter.stoerrelse(); i++) {
-      System.out.println(pasienter.hent(i));
-      System.out.println(pasienter.hent(i).hentReseptListe().stoerrelse());
-      Stabel<Resept> rListe = pasienter.hent(i).hentReseptListe();
-      for (int o = 0; o < rListe.stoerrelse(); o++) {
-        if (rListe.hent(o) instanceof HvitResept) {
-          System.out.println(rListe.hent(o));
+    if (pasienter.stoerrelse() != 0) {
+      for (int i = 0; i < pasienter.stoerrelse(); i++) {
+        System.out.println(pasienter.hent(i));
+        System.out.println(pasienter.hent(i).hentReseptListe().stoerrelse());
+        Stabel<Resept> rListe = pasienter.hent(i).hentReseptListe();
+
+        if (rListe.stoerrelse() != 0) {
+          for (int j = 0; j < rListe.stoerrelse(); j++) {
+            if (rListe.hent(j) instanceof HvitResept) {
+              System.out.println(rListe.hent(j));
+            }
+            else if (rListe.hent(j) instanceof BlaaResept) {
+              System.out.println(rListe.hent(j));
+            }
+            else if (rListe.hent(j) instanceof MilitaerResept) {
+              System.out.println(rListe.hent(j));
+            }
+            else if (rListe.hent(j) instanceof PResept) {
+              System.out.println(rListe.hent(j));
+            }
+          }
         }
-        else if (rListe.hent(o) instanceof BlaaResept) {
-          System.out.println(rListe.hent(o));
-        }
-        else if (rListe.hent(o) instanceof MilitaerResept) {
-          System.out.println(rListe.hent(o));
-        }
-        else if (rListe.hent(o) instanceof PResept) {
-          System.out.println(rListe.hent(o));
+        else {
+          System.out.println("Pasienten har ingen resepter.");
         }
       }
+    }
+
+    else {
+      System.out.println("Det er ingen pasienter i listen.");
     }
 
     System.out.println("\n Skriver ut legemiddler: ");
     for (int i = 0; i < legemidler.stoerrelse(); i++) {
-      if (legemidler.hent(i) instanceof Vanlig) {
-        Vanlig legemidlerElement1 = (Vanlig) legemidler.hent(i);
-        System.out.println(legemidler.hent(i));
-      }
+      if (legemidler.stoerrelse() != 0) {
+        if (legemidler.hent(i) instanceof Vanlig) {
+          Vanlig legemidlerElement1 = (Vanlig) legemidler.hent(i);
+          System.out.println(legemidler.hent(i));
+        }
 
-      else if (legemidler.hent(i) instanceof Narkotisk) {
-        Narkotisk legemidlerElement2 = (Narkotisk) legemidler.hent(i);
-        System.out.println(legemidler.hent(i));
-      }
+        else if (legemidler.hent(i) instanceof Narkotisk) {
+          Narkotisk legemidlerElement2 = (Narkotisk) legemidler.hent(i);
+          System.out.println(legemidler.hent(i));
+        }
 
-      else if (legemidler.hent(i) instanceof Vanedannende) {
-        Vanedannende legemidlerElement3 = (Vanedannende) legemidler.hent(i);
-        System.out.println(legemidler.hent(i));
+        else if (legemidler.hent(i) instanceof Vanedannende) {
+          Vanedannende legemidlerElement3 = (Vanedannende) legemidler.hent(i);
+          System.out.println(legemidler.hent(i));
+        }
+      }
+      else {
+        System.out.println("Det er ingen legemidler i listen.");
       }
     }
   }
