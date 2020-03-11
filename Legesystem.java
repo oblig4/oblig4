@@ -8,9 +8,6 @@ public class Legesystem {
   private Lenkeliste<Pasient> pasienter;
   private Lenkeliste<Legemiddel> legemidler;
   private String filnavn;
-  private static int UtskrevetVannLg = 0;
-  private static int UtskrevetNarkotiskLg = 0;
-  private static Scanner input;
 
 
   public Legesystem(String filnavn) throws FileNotFoundException, UlovligUtskrift {
@@ -514,14 +511,26 @@ public class Legesystem {
   }
   
       public void statistikk(){
+        
+        Lenkeliste<Resept> vanndanResept = new Lenkeliste<>();
+        Lenkeliste<Resept> narkoResept = new Lenkeliste<>();
 
-        //Totalt antall utskrevne resepter på vanedannende legemidler ??????
-        System.out.println("Totalt antall utskrevne resepter på vanedannende legemidler: " + UtskrevetVannLg);
+        for(Pasient pasient : pasienter){
+          for(Resept resept : pasient.hentReseptListe()){
+            if(resept.hentLegemiddel() instanceof Vanedannende){
+              vanndanResept.leggTil(resept);
+            }
 
-        //Totalt antall utskrevne resepter på narkotiske legemidler ??????
-        System.out.println("Vanedannende legemidler utskrevet til militaeret: " + UtskrevetNarkotiskLg);
+           else if(resept.hentLegemiddel() instanceof Narkotisk){
+            narkoResept.leggTil(resept);
+          }
+        }
+      }
+       System.out.println("Totalt antall utskrevne resepter på vanedannende legemidler: " + vanndanResept.stoerrelse());
+       System.out.println("Totalt antall utskrevne resepter på narkotiske legemidler: " + narkoResept.stoerrelse());
 
-
+        
+        
         //antall natkotiske resepter per lege
         System.out.println("Antall narkotiske legemidler hver lege har skrevet ut:");
         for(Lege lege : leger){//List av navnene på alle leger
@@ -551,6 +560,8 @@ public class Legesystem {
 
 
   private void brukResept() {
+    private static Scanner input;
+    
     System.out.println("Hvilken pasient vil du se resepter for?");
 
     int pasientMedReseptNummer = 0; //teller pasienter med resept nummer
