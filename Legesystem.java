@@ -665,3 +665,167 @@ public void skrivUtInfo() {
     }
   }
 
+
+public void skrivUtInfo() {
+    //System.out.println(ignore.stoerrelse());
+
+    System.out.println("Skriver ut leger: ");
+    for (int i = 0; i < leger.stoerrelse(); i++) {
+      System.out.println(leger.hent(i));
+      System.out.println(leger.hent(i).hentReseptliste().stoerrelse());
+    }
+
+    System.out.println("\nSkriver ut pasienter og deres resepter: ");
+    for (int i = 0; i < pasienter.stoerrelse(); i++) {
+      System.out.println(pasienter.hent(i));
+      String reseptene = "\nRESEPTUTSKRIFT: \n";
+      Stabel<Resept> rListe = pasienter.hent(i).hentReseptListe();
+      //System.out.println(rListe.stoerrelse());
+
+
+      for (int o = 0; o < rListe.stoerrelse(); o++) {
+        if (rListe.hent(o) instanceof PResept) {
+          //System.out.println(rListe.hent(o));
+          reseptene += "\n" + rListe.hent(o) + "\n";
+        }
+        else if (rListe.hent(o) instanceof BlaaResept) {
+          //System.out.println(rListe.hent(o));
+          reseptene += "\n" + rListe.hent(o) + "\n";
+        }
+        else if (rListe.hent(o) instanceof MilitaerResept) {
+          //System.out.println(rListe.hent(o));
+          reseptene += "\n" + rListe.hent(o) + "\n";
+        }
+        else if (rListe.hent(o) instanceof HvitResept) {
+          //System.out.println(rListe.hent(o));
+          reseptene += "\n" + rListe.hent(o) + "\n";
+        }
+
+      }
+      if (reseptene.equals("\nRESEPTUTSKRIFT: \n")) {
+        reseptene = "";
+      }
+      System.out.println(reseptene);
+    }
+
+    System.out.println("\n Skriver ut legemiddler: ");
+    String legemidlene = "\nLEGEMIDDELUTSKRIFT: \n";
+    for (int i = 0; i < legemidler.stoerrelse(); i++) {
+
+
+      if (legemidler.hent(i) instanceof Vanlig) {
+        Vanlig legemidlerElement1 = (Vanlig) legemidler.hent(i);
+        //System.out.println(legemidler.hent(i));
+        legemidlene += "\n" + legemidler.hent(i) + "\n";
+      }
+
+      else if (legemidler.hent(i) instanceof Narkotisk) {
+        Narkotisk legemidlerElement2 = (Narkotisk) legemidler.hent(i);
+        //System.out.println(legemidler.hent(i));
+        legemidlene += "\n" + legemidler.hent(i) + "\n";
+      }
+
+      else if (legemidler.hent(i) instanceof Vanedannende) {
+        Vanedannende legemidlerElement3 = (Vanedannende) legemidler.hent(i);
+        //System.out.println(legemidler.hent(i));
+        legemidlene += "\n" + legemidler.hent(i) + "\n";
+      }
+    }
+    System.out.println(legemidlene);
+  }
+
+  public void statistikk(){
+    //Totalt antall utskrevne resepter på vanedannende legemidler ??????
+    System.out.println("Totalt antall utskrevne resepter på vanedannende legemidler: " + UtskrevetVannLg);
+
+
+    //Totalt antall utskrevne resepter på narkotiske legemidler ??????
+    System.out.println("Totalt antall utskrevne resepter på narkotiske legemidler: " + UtskrevetMilitaerVannLg);
+
+
+    //antall natkotiske resepter per lege
+    System.out.println("Antall narkotiske legemidler hver lege har skrevet ut:");
+    for(Lege lege : leger){//List av navnene på alle leger
+      if (lege instanceof Spesialist) {
+        int n = 0;
+        Lenkeliste<Resept> liste = lege.hentReseptliste();
+        for (Resept r : liste) {
+          if (r.hentLegemiddel() instanceof Narkotisk) {
+            n++;
+          }
+        }
+        System.out.println(lege.hentNavn() + ": " + n + "narkotiske legemidler");
+      }
+
+
+      //System.out.println(lege.hentNavn() + ": " + lege.skrivNarkotiskResept().stoerrelse()); //antall utskrevet narkotisk resepter
+
+
+      //antall pasienter som har minst en gyldig resept
+      System.out.println("Antall gyldige resepter på narkotiske legemidler hver pasient har:");
+      boolean harNarkotisk = false;
+      for(Pasient pasient : pasienter){//List av navnene på alle pasienter
+        Lenkeliste<Resept> narkotiskeResepter = new Lenkeliste <>(); //lager en lenkeliste av narkotiske resepter
+
+        for(Resept resept : pasient.hentReseptListe()){ //hente Resepter er pasient
+          narkotiskeResepter.leggTil(resept);
+        }
+
+        if(narkotiskeResepter.stoerrelse() > 0) {
+          System.out.println(pasient.hentPasientNavn() + ": " + narkotiskeResepter.stoerrelse());
+          harNarkotisk = true;
+        }
+        if(!harNarkotisk){
+          System.out.println("Ingen har gyldige narkotiske resepter.");
+        }
+      }
+    }
+  }
+
+  private void brukResept() {
+    Scanner input = new Scanner(System.in);
+
+    System.out.println("Hvilken pasient vil du se resepter for?");
+
+    int pasientMedReseptNummer = 0; //teller pasienter med resept nummer
+    Lenkeliste<Pasient> pasienterMedResept = new Lenkeliste<>(); //list for pasienter som har resept
+
+    for (Pasient pasient : pasienter) { //går gjennom alle pasienter
+      if (pasient.hentReseptListe().stoerrelse() > 0) { //hvis resepter på en pasien er større enn null
+        System.out.println(pasientMedReseptNummer + ": " + pasient.hentPasientNavn() + " (fnr" + pasient.hentFoedselnummer() + ")");
+        pasienterMedResept.leggTil(pasient); //legger vi pasienten in i lista
+        pasientMedReseptNummer++;
+        }
+      }
+      if (pasienterMedResept.stoerrelse() > 0) { //hvis størrelsen til lista er større enn null
+        int valgtPasientNummer;
+        valgtPasientNummer = Integer.parseInt(input.nextLine()); //spørre man om pasient nr. som input
+
+
+        if (valgtPasientNummer >= 0 && valgtPasientNummer < pasienterMedResept.stoerrelse()) { //hvis input er større eller lik null og mindre enn størrelse til lista
+          Pasient valgtPasient = pasienterMedResept.hent(valgtPasientNummer); //henter pasient info
+          System.out.println("Valgt pasient: " + valgtPasient.hentPasientNavn() + " (fnr"+ valgtPasient.hentFoedselnummer()+ ")\n" + "Hvilken resept vil du bruke?");
+
+          int reseptNummer = 0; //teller nummeret til resept
+          for (Resept resept : valgtPasient.hentReseptListe()) { //velger resept til pasienten
+            System.out.println(reseptNummer + ": " + resept.hentLegemiddel().hentNavn() + " (" + resept.hentReit() + " reit)");
+            reseptNummer++;
+          }
+
+          int valgtReseptNummer;
+          valgtReseptNummer = Integer.parseInt(input.nextLine()); //hvilken resept som velges ved input
+
+
+          try {
+            Resept valgtResept = valgtPasient.hentReseptListe().hent(valgtReseptNummer);
+            valgtResept.bruk();
+
+            System.out.println("Brukte resept paa " + valgtResept.hentLegemiddel().hentNavn() + ". Antall gjenverende reit: " + valgtResept.hentReit());
+            }
+          catch(Exception e){
+              System.out.println("Ikke gyldig input.");
+          }
+        }
+      }
+    }
+
