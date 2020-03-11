@@ -9,7 +9,7 @@ public class Legesystem {
   private Lenkeliste<Legemiddel> legemidler;
   private String filnavn;
   private static int UtskrevetVannLg = 0;
-  private static int UtskrevetMilitaerVannLg = 0;
+  private static int UtskrevetNarkotiskLg = 0;
   private static Scanner input;
 
 
@@ -519,7 +519,7 @@ public class Legesystem {
         System.out.println("Totalt antall utskrevne resepter på vanedannende legemidler: " + UtskrevetVannLg);
 
         //Totalt antall utskrevne resepter på narkotiske legemidler ??????
-        System.out.println("Vanedannende legemidler utskrevet til militaeret: " + UtskrevetMilitaerVannLg);
+        System.out.println("Vanedannende legemidler utskrevet til militaeret: " + UtskrevetNarkotiskLg);
 
 
         //antall natkotiske resepter per lege
