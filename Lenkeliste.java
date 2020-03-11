@@ -13,21 +13,21 @@ public class Lenkeliste<T> implements Liste<T> {
   
   private class LenkeListeIterator implements Iterator<T> {
 
-    private T gjeldendeElement; // variabel som holder på det elementet iteratoren er på.
+    private Node gjeldende; // variabel som holder på det elementet iteratoren er på.
 
     public LenkeListeIterator() {
-      gjeldendeElement = start;
+      gjeldende = start;
     }
 
     @Override
     public T next() {
-      gjeldendeElement = gjeldendeElement.neste;
-      return gjeldendeElement.innhold;
+      gjeldende = gjeldende.neste;
+      return gjeldende.innhold;
     }
 
     @Override
     public boolean hasNext() {
-      return gjeldendeElement != slutt.forrige;
+      return gjeldende != slutt.forrige;
     }
   }
   
