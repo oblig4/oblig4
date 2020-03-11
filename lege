@@ -1,0 +1,1543 @@
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.Scanner;
+import java.io.PrintWriter;
+import java.util.Arrays;
+import java.util.NoSuchElementException;
+import java.util.InputMismatchException;
+
+
+
+
+public class Legesystem {
+  private SortertLenkeliste<Lege> leger;
+  private Lenkeliste<Pasient> pasienter;
+  private Lenkeliste<Legemiddel> legemidler;
+  private Lenkeliste<Resept> resepter;
+  private String filnavn;
+  private static int UtskrevetVannLg = 0;
+  private static int UtskrevetMilitaerVannLg = 0;
+  private Lenkeliste<String> ignore;
+
+
+  public Legesystem(String filnavn) throws FileNotFoundException, UlovligUtskrift, InputMismatchException {
+    leger = new SortertLenkeliste<>();
+    pasienter = new Lenkeliste<>();
+    legemidler = new Lenkeliste<>();
+    ignore = new Lenkeliste<>();
+    resepter = new Lenkeliste<>();
+    this.filnavn = filnavn;
+
+    lesFraFil(filnavn);
+    hovedmeny();
+  }
+
+
+  private void printHovedmeny() {
+    System.out.println("\nHovedmeny: ");
+    System.out.println("0: Avslutte programmet. ");
+    System.out.println("1: Skrive oversikt over pasienter, leger, legemiddler, og resepter.");
+    System.out.println("2: Opprette og legge til nye elementer i systemet. ");
+    System.out.println("3: Bruke en gitt resept fra listen til en pasient. ");
+    System.out.println("4: Skrive ut forskjellige former for statistikk. ");
+    System.out.println("5: Skrive alle data til fil. \n");
+  }
+
+  public void hovedmeny() throws UlovligUtskrift, NumberFormatException, FileNotFoundException, InputMismatchException{
+    Scanner scanner = new Scanner(System.in);
+
+    printHovedmeny();
+    System.out.println("Velg kommando ved å skrive inn tilsvarende tall: ");
+    int kommando = 6;
+
+    try {
+      kommando = scanner.nextInt();
+    }
+    catch (InputMismatchException e) {
+      System.out.println("Ugyldig input. Avslutter programmet.");
+      kommando = 0;
+    }
+
+    while (kommando != 0) {
+
+      if (kommando == 1) { // oppgave E3
+        skrivUtInfo();
+      }
+      else if (kommando == 2) { // oppgave E4
+        brukerLeggTil();
+      }
+      else if (kommando == 3) { // oppgave E5
+        brukResept();
+      }
+      else if (kommando == 4) { // oppgave E6
+        statistikk();
+      }
+      else if (kommando == 5) { // oppgave E8
+        skrivTilFil();
+      }
+      else {
+        System.out.println("Ugyldig input. Prøv på nytt.");
+      }
+      printHovedmeny();
+      System.out.println("\n Velg kommando ved å skrive inn tilsvarende tall. \n ");
+      kommando = scanner.nextInt();
+    }
+
+  }
+
+  public void skrivUtInfo() {
+    //System.out.println(ignore.stoerrelse());
+
+    System.out.println("Skriver ut leger: ");
+    for (int i = 0; i < leger.stoerrelse(); i++) {
+      System.out.println(leger.hent(i));
+      System.out.println(leger.hent(i).hentReseptliste().stoerrelse());
+    }
+
+    System.out.println("\nSkriver ut pasienter og deres resepter: ");
+    for (int i = 0; i < pasienter.stoerrelse(); i++) {
+      System.out.println(pasienter.hent(i));
+      String reseptene = "\nRESEPTUTSKRIFT: \n";
+      Stabel<Resept> rListe = pasienter.hent(i).hentReseptListe();
+      //System.out.println(rListe.stoerrelse());
+
+
+      for (int o = 0; o < rListe.stoerrelse(); o++) {
+        if (rListe.hent(o) instanceof PResept) {
+          //System.out.println(rListe.hent(o));
+          reseptene += "\n" + rListe.hent(o) + "\n";
+        }
+        else if (rListe.hent(o) instanceof BlaaResept) {
+          //System.out.println(rListe.hent(o));
+          reseptene += "\n" + rListe.hent(o) + "\n";
+        }
+        else if (rListe.hent(o) instanceof MilitaerResept) {
+          //System.out.println(rListe.hent(o));
+          reseptene += "\n" + rListe.hent(o) + "\n";
+        }
+        else if (rListe.hent(o) instanceof HvitResept) {
+          //System.out.println(rListe.hent(o));
+          reseptene += "\n" + rListe.hent(o) + "\n";
+        }
+
+      }
+      if (reseptene.equals("\nRESEPTUTSKRIFT: \n")) {
+        reseptene = "";
+      }
+      System.out.println(reseptene);
+    }
+
+    System.out.println("\n Skriver ut legemiddler: ");
+    String legemidlene = "\nLEGEMIDDELUTSKRIFT: \n";
+    for (int i = 0; i < legemidler.stoerrelse(); i++) {
+
+
+      if (legemidler.hent(i) instanceof Vanlig) {
+        Vanlig legemidlerElement1 = (Vanlig) legemidler.hent(i);
+        //System.out.println(legemidler.hent(i));
+        legemidlene += "\n" + legemidler.hent(i) + "\n";
+      }
+
+      else if (legemidler.hent(i) instanceof Narkotisk) {
+        Narkotisk legemidlerElement2 = (Narkotisk) legemidler.hent(i);
+        //System.out.println(legemidler.hent(i));
+        legemidlene += "\n" + legemidler.hent(i) + "\n";
+      }
+
+      else if (legemidler.hent(i) instanceof Vanedannende) {
+        Vanedannende legemidlerElement3 = (Vanedannende) legemidler.hent(i);
+        //System.out.println(legemidler.hent(i));
+        legemidlene += "\n" + legemidler.hent(i) + "\n";
+      }
+    }
+    System.out.println(legemidlene);
+  }
+
+  public void statistikk() {
+
+    System.out.println(legemidler.stoerrelse());
+    System.out.println(pasienter.stoerrelse());
+
+/*
+
+    System.out.println("Printer ut statisikk: ");
+
+
+    Lenkeliste<Resept> vanndanResept = new Lenkeliste<>();
+    Lenkeliste<Resept> narkoResept = new Lenkeliste<>();
+
+    for (int i = 0; i < leger.stoerrelse(); i++) {
+      Lenkeliste<Resept> rListe = leger.hent(i).hentReseptliste();
+      for (int j = 0; j < rListe.stoerrelse(); j++) {
+        if (rListe.hent(j).hentLegemiddel() instanceof Narkotisk) {
+          narkoResept.leggTil(rListe.hent(j));
+        }
+        else if (rListe.hent(j).hentLegemiddel() instanceof Vanedannende) {
+          vanndanResept.leggTil(rListe.hent(j));
+        }
+      }
+    }
+
+
+
+    System.out.println("Totalt antall utskrevne resepter på vanedannende legemidler: " + vanndanResept.stoerrelse() + "\n");
+    System.out.println("Totalt antall utskrevne resepter på narkotiske legemidler: " + narkoResept.stoerrelse() + "\n");
+
+
+    //antall natkotiske resepter per lege
+    System.out.println("\nAntall narkotiske legemidler hver lege har skrevet ut: \n");
+    for(int s = 0; s < leger.stoerrelse(); s++){//List av navnene på alle leger
+      int n = 0;
+      if (leger.hent(s) instanceof Spesialist) {
+
+        Lenkeliste<Resept> liste = leger.hent(s).hentReseptliste();
+        for (int r = 0; r < liste.stoerrelse(); r++) {
+          if (liste.hent(r).hentLegemiddel() instanceof Narkotisk) {
+            n++;
+
+          }
+        }
+      }
+      System.out.println(leger.hent(s).hentNavn() + ": " + n + " narkotiske legemidler");
+    }
+
+
+    //System.out.println(lege.hentNavn() + ": " + lege.skrivNarkotiskResept().stoerrelse()); //antall utskrevet narkotisk resepter
+
+
+    //antall pasienter som har minst en gyldig resept
+    System.out.println("\nAntall gyldige resepter på narkotiske legemidler hver pasient har:");
+    boolean harNarkotisk = false;
+    for(Pasient pasient : pasienter){//List av navnene på alle pasienter
+      Lenkeliste<Resept> narkotiskeResepter = new Lenkeliste <>(); //lager en lenkeliste av narkotiske resepter
+
+      Stabel<Resept> resListe = pasient.hentReseptListe();
+
+      for(int y = 0; y < resListe.stoerrelse(); y++){ //hente Resepter er pasient
+        narkotiskeResepter.leggTil(resListe.hent(y));
+      }
+
+      if(narkotiskeResepter.stoerrelse() > 0) {
+        System.out.println(pasient.hentPasientNavn() + ": " + narkotiskeResepter.stoerrelse());
+        harNarkotisk = true;
+      }
+      if(!harNarkotisk){
+        System.out.println("Ingen har gyldige narkotiske resepter.");
+      }
+    }
+*/
+  }
+
+
+  private void brukResept() {
+    Scanner input = new Scanner(System.in);
+
+    System.out.println("Hvilken pasient vil du se resepter for?");
+
+    int pasientMedReseptNummer = 0; //teller pasienter med resept nummer
+    Lenkeliste<Pasient> pasienterMedResept = new Lenkeliste<>(); //list for pasienter som har resept
+
+    for (Pasient pasient : pasienter) { //går gjennom alle pasienter
+      if (pasient.hentReseptListe().stoerrelse() > 0) { //hvis resepter på en pasien er større enn null
+        System.out.println(pasientMedReseptNummer + ": " + pasient.hentPasientNavn() + " (fnr" + pasient.hentFoedselnummer() + ")");
+        pasienterMedResept.leggTil(pasient); //legger vi pasienten in i lista
+        pasientMedReseptNummer++;
+        }
+      }
+      if (pasienterMedResept.stoerrelse() > 0) { //hvis størrelsen til lista er større enn null
+        int valgtPasientNummer;
+        valgtPasientNummer = Integer.parseInt(input.nextLine()); //spørre man om pasient nr. som input
+
+
+        if (valgtPasientNummer >= 0 && valgtPasientNummer < pasienterMedResept.stoerrelse()) { //hvis input er større eller lik null og mindre enn størrelse til lista
+          Pasient valgtPasient = pasienterMedResept.hent(valgtPasientNummer); //henter pasient info
+          System.out.println("Valgt pasient: " + valgtPasient.hentPasientNavn() + " (fnr"+ valgtPasient.hentFoedselnummer()+ ")\n" + "Hvilken resept vil du bruke?");
+
+          int reseptNummer = 0; //teller nummeret til resept
+          for (Resept resept : valgtPasient.hentReseptListe()) { //velger resept til pasienten
+            System.out.println(reseptNummer + ": " + resept.hentLegemiddel().hentNavn() + " (" + resept.hentReit() + " reit)");
+            reseptNummer++;
+          }
+
+          int valgtReseptNummer;
+          valgtReseptNummer = Integer.parseInt(input.nextLine()); //hvilken resept som velges ved input
+
+
+          try {
+            Resept valgtResept = valgtPasient.hentReseptListe().hent(valgtReseptNummer);
+            valgtResept.bruk();
+
+            System.out.println("Brukte resept paa " + valgtResept.hentLegemiddel().hentNavn() + ". Antall gjenverende reit: " + valgtResept.hentReit());
+            }
+          catch(Exception e){
+              System.out.println("Ikke gyldig input.");
+          }
+        }
+      }
+    }
+
+  private void lesFraFil(String filnavn) throws FileNotFoundException, UlovligUtskrift, NumberFormatException {
+    //skrivResept-metodene for å opprette Resept objekter
+    //hvis et objekt er ugyldig, skal det ikke legges inn i systemet
+
+
+
+    Scanner sc = null;
+
+    try {
+      sc = new Scanner(new File(filnavn));
+    }
+
+    catch (FileNotFoundException e) {
+      System.out.println("Fant ikke fil. Går tilbake til hovedmeny.");
+      hovedmeny();
+    }
+
+    boolean hjelper = true;
+
+    String hva = sc.nextLine();
+
+    while (sc.hasNextLine() && hjelper == true) {
+      String linje = sc.nextLine();
+      while (linje.charAt(0) != '#') {
+        String[] info = linje.split(",");
+        //System.out.println(Arrays.toString(info));
+        String navn = info[0];
+        String fnr = info[1];
+
+        Pasient pasient = new Pasient(navn, fnr);
+        pasienter.leggTil(pasient);
+        linje = sc.nextLine();
+      }
+
+      hjelper = false;
+    }
+
+
+
+    while (sc.hasNextLine() && hjelper == false) {
+      String linje = sc.nextLine();
+      while (linje.charAt(0) != '#') {
+        String[] info = linje.split(",");
+        //System.out.println(Arrays.toString(info));
+
+        try {
+          String navn = info[0];
+          String type = info[1];
+          double pris = Double.parseDouble(info[2]);
+          double virkestoff = Double.parseDouble(info[3]);
+          int styrke = 0;
+
+          linje = sc.nextLine();
+
+          if (info.length == 5) {
+            styrke = Integer.parseInt(info[4]);
+          }
+
+          if (type.equals("narkotisk")) {
+            Narkotisk nark = new Narkotisk(navn, pris, virkestoff, styrke);
+            legemidler.leggTil(nark);
+
+          }
+
+          else if (type.equals("vanedannende")) {
+            Vanedannende vane = new Vanedannende(navn, pris, virkestoff, styrke);
+            legemidler.leggTil(vane);
+          }
+
+          else if (type.equals("vanlig")) {
+            Vanlig van = new Vanlig(navn, pris, virkestoff);
+            legemidler.leggTil(van);
+          }
+
+        }
+
+        catch (NumberFormatException e){
+          linje = sc.nextLine();
+
+        }
+
+
+      }
+      hjelper = true;
+    }
+
+    while (sc.hasNextLine() && hjelper == true) {
+      String linje = sc.nextLine();
+
+
+      while (linje.charAt(0) != '#') {
+        String[] info = linje.split(",");
+        //System.out.println(Arrays.toString(info));
+
+        try {
+          String navn = info[0];
+          int kontrollid = Integer.parseInt(info[1]);
+
+          linje = sc.nextLine();
+
+          if (kontrollid != 0) {
+            Spesialist lege = new Spesialist(navn, kontrollid);
+            leger.leggTil(lege);
+
+          }
+
+          else {
+            Lege lege = new Lege(navn);
+            leger.leggTil(lege);
+          }
+
+        }
+
+        catch (NumberFormatException e) {
+          linje = sc.nextLine();
+
+        }
+      }
+      hjelper = false;
+    }
+
+    while (sc.hasNextLine() && hjelper == false) {
+      String linje = sc.nextLine();
+
+
+      while (linje.charAt(0) != '#') {
+
+        String[] info = linje.split(",");
+        System.out.println(Arrays.toString(info));
+
+        try {
+          int legemiddelNr = Integer.parseInt(info[0]);
+          String legeNavn = info[1];
+          int pasientID = Integer.parseInt(info[2]);
+          String type = info[3];
+
+          int reit = 0;
+
+
+          if (info.length == 5) {
+            reit = Integer.parseInt(info[4]);
+          }
+
+
+          Lege legen = null;
+          Pasient pasienten = null;
+          Legemiddel legemiddelet = null;
+
+          //skal finne legen
+
+          if (pasientID < pasienter.stoerrelse() && legemiddelNr < legemidler.stoerrelse()) {
+            for (int i = 0; i < leger.stoerrelse(); i++) {
+
+              if (leger.hent(i).hentNavn().equals(legeNavn)) {
+                if (leger.hent(i) instanceof Spesialist) {
+                  legen = leger.hent(i);
+                  legen = (Spesialist) legen;
+                }
+                else {
+                  legen = leger.hent(i);
+                }
+              }
+            }
+
+
+
+
+            //skal finne pasienten
+
+            for (int i = 0; i < pasienter.stoerrelse(); i++) {
+              if (pasienter.hent(i).hentPasientId() == pasientID) {
+                pasienten = pasienter.hent(i);
+              }
+            }
+
+            //skal finne legemiddelet
+
+            for (int i = 0; i < legemidler.stoerrelse(); i++) {
+              //System.out.println("id: "+legemidler.hent(i).hentId());
+              if (legemidler.hent(i).hentId() == legemiddelNr) {
+                if (legemidler.hent(i) instanceof Vanlig) {
+                  legemiddelet = legemidler.hent(i);
+                  legemiddelet = (Vanlig) legemiddelet;
+                }
+                else if (legemidler.hent(i) instanceof Vanedannende) {
+                  legemiddelet = legemidler.hent(i);
+                  legemiddelet = (Vanedannende) legemiddelet;
+                }
+
+                else if (legemidler.hent(i) instanceof Narkotisk) {
+                  legemiddelet = legemidler.hent(i);
+                  legemiddelet = (Narkotisk) legemiddelet;
+                }
+              }
+            }
+
+
+            if (type.equals("hvit")) {
+
+              try {
+                HvitResept hv = legen.skrivHvitResept(legemiddelet, pasienten, reit);
+
+                System.out.println(hv.hentLegemiddel());
+
+                pasienten.leggTilResept(hv);
+
+                resepter.leggTil(hv);
+
+
+              }
+
+              catch (UlovligUtskrift e) {
+                String string = "Feil under innlesing av fil.";
+                ignore.leggTil(string);
+              }
+            }
+
+            else if (type.equals("blaa")) {
+
+              try {
+                BlaaResept bl = legen.skrivBlaaResept(legemiddelet, pasienten, reit);
+
+                pasienten.leggTilResept(bl);
+
+                System.out.println(bl.hentLegemiddel());
+
+                resepter.leggTil(bl);
+              }
+
+              catch (UlovligUtskrift e) {
+                String string = "Feil under innlesing av fil.";
+                ignore.leggTil(string);
+              }
+
+
+            }
+
+            else if (type.equals("militaer")) {
+
+              try {
+                MilitaerResept ml = legen.skrivMilitaerResept(legemiddelet, pasienten, reit);
+
+                pasienten.leggTilResept(ml);
+
+                System.out.println(ml.hentLegemiddel());
+
+                resepter.leggTil(ml);
+
+              }
+              catch (UlovligUtskrift e) {
+                String string = "Feil under innlesing av fil.";
+                ignore.leggTil(string);
+              }
+            }
+
+            else if (type.equals("p")) {
+
+              try {
+                PResept pr = legen.skrivPResept(legemiddelet, pasienten);
+
+                pasienten.leggTilResept(pr);
+
+                resepter.leggTil(pr);
+
+                System.out.println(pr.hentLegemiddel());
+
+              }
+              catch (UlovligUtskrift e) {
+                String string = "Feil under innlesing av fil.";
+                ignore.leggTil(string);
+              }
+            }
+          }
+
+          try {
+            linje = sc.nextLine();
+          }
+
+          catch (NoSuchElementException e) {
+            break;
+          }
+
+        }
+
+        catch (NumberFormatException e) {
+          linje = sc.nextLine();
+
+
+        }
+
+
+      }
+      hjelper = true;
+
+      
+    }
+    sc.close();
+  }
+
+
+
+  public void brukerLeggTil() throws UlovligUtskrift, NumberFormatException, FileNotFoundException, InputMismatchException {
+    System.out.println("Vil du legge til en lege, pasient, resept eller legemiddel? ja/nei");
+    Scanner leggTil = new Scanner(System.in);
+    String svar = leggTil.next();
+
+
+    if (!svar.equals("ja") && !svar.equals("nei")) {
+      System.out.println("\nUgyldig input. Går tilbake til hovedmeny");
+      return;
+    }
+
+
+    String hva;
+
+    if (svar.equals("ja")) {
+      System.out.println("Hva vil du legge til? lege/pasient/resept/legemiddel");
+      hva = leggTil.next();
+
+
+      if (!hva.equals("lege") && !hva.equals("pasient") && !hva.equals("resept") && !hva.equals("legemiddel")) {
+        System.out.println("\nUgyldig input. Går tilbake til hovedmeny");
+        return;
+      }
+    }
+
+    else {
+      return;
+    }
+
+    if (hva.equals("lege")) {
+      System.out.println("Skriv inn legens navn: ");
+      String navn = leggTil.next();
+      System.out.println("Skriv inn kontrollid: (0 hvis vanlig lege)");
+
+      try {
+        int kontrollid = leggTil.nextInt();
+
+        if (kontrollid != 0) {
+          Spesialist spes = new Spesialist(navn, kontrollid);
+          leger.leggTil(spes);
+          System.out.println("Har lagt til legen. Går tilbake til hovedmeny.");
+
+          return;
+
+        }
+
+        Lege lege = new Lege(navn);
+
+        leger.leggTil(lege);
+
+        System.out.println("Har lagt til legen. Går tilbake til hovedmeny.");
+
+      }
+      catch (InputMismatchException e) {
+        System.out.println("Ugyldig input. Går tilbake til hovedmenyen.");
+        return;
+      }
+
+
+    }
+
+    else if (hva.equals("pasient")) {
+
+      //System.out.println(pasienter.stoerrelse());
+
+
+      System.out.println("Skriv inn pasientens navn: ");
+      String navn = leggTil.next();
+      System.out.println("Skriv inn pasientens fødselsnummer: ");
+      String fnr = leggTil.next();
+
+      Pasient pasient = new Pasient(navn, fnr);
+      pasienter.leggTil(pasient);
+
+      //System.out.println(pasienter.stoerrelse());
+
+      System.out.println("Har lagt til pasienten. Går tilbake til hovedmeny.");
+
+    }
+
+    else if (hva.equals("resept")) {
+      System.out.println("Hvilken type vil du legge til? hvit/blaa/militaer/p");
+      String type = leggTil.next();
+
+      if (!type.equals("hvit") && !type.equals("blaa") && !type.equals("militaer") && !type.equals("p")) {
+        System.out.println("\nUgyldig input. Går tilbake til hovedmeny");
+
+        return;
+      }
+
+      if (type.equals("hvit")) {
+        Lege legen = null;
+        Pasient pasienten = null;
+        Legemiddel legemiddelet = null;
+        int pasientID = 0;
+        int legemiddelNr = 0;
+        int reit = 0;
+
+        //skal finne legen
+
+        System.out.println("Skriv inn legens navn: ");
+        String legeNavn = leggTil.next();
+
+        System.out.println("Skriv inn pasientents id: ");
+
+        try {
+          pasientID = leggTil.nextInt();
+        }
+        catch (InputMismatchException e) {
+          System.out.println("Ugyldig input. Går tilbake til hovedmenyen.");
+
+          return;
+        }
+
+        System.out.println("Skriv inn legemiddelets nummer: ");
+
+        try {
+          legemiddelNr = leggTil.nextInt();
+        }
+        catch (InputMismatchException e) {
+          System.out.println("Ugyldig input. Går tilbake til hovedmenyen.");
+
+          return;
+        }
+
+        System.out.println("Skriv inn reiten: ");
+        try {
+          reit = leggTil.nextInt();
+        }
+        catch (InputMismatchException e) {
+          System.out.println("Ugyldig input. Går tilbake til hovedmenyen.");
+          return;
+        }
+
+        for (int i = 0; i < leger.stoerrelse(); i++) {
+          if (leger.hent(i).hentNavn().equals(legeNavn)) {
+            if (leger.hent(i) instanceof Spesialist) {
+              legen = leger.hent(i);
+              legen = (Spesialist) legen;
+            }
+            else {
+              legen = leger.hent(i);
+            }
+          }
+        }
+
+        if (legen == null) {
+          System.out.println("Ugyldig utskivende lege.");
+          System.out.println("Vil du prøve på nytt? ja/nei");
+          String fortsette = leggTil.next();
+
+          if (!fortsette.equals("ja") && !fortsette.equals("nei")) {
+            System.out.println("\nUgyldig input. Går tilbake til hovedmeny");
+
+            return;
+          }
+
+          if (fortsette.equals("ja")) {
+            brukerLeggTil();
+            return;
+          }
+
+          else {
+            //hovedmeny();
+            return;
+          }
+        }
+
+        //skal finne pasienten
+
+        for (int i = 0; i < pasienter.stoerrelse(); i++) {
+          if (pasienter.hent(i).hentPasientId() == pasientID) {
+            pasienten = pasienter.hent(i);
+          }
+        }
+
+        if (pasienten == null) {
+          System.out.println("Ugyldig pasient.");
+          System.out.println("Vil du prøve på nytt? ja/nei");
+          String fortsette = leggTil.next();
+
+          if (!fortsette.equals("ja") && !fortsette.equals("nei")) {
+            System.out.println("\nUgyldig input. Går tilbake til hovedmeny");
+
+            return;
+          }
+
+          if (fortsette.equals("ja")) {
+            brukerLeggTil();
+            return;
+          }
+
+          else {
+
+            return;
+          }
+        }
+
+        //skal finne legemiddelet
+
+        for (int i = 0; i < legemidler.stoerrelse(); i++) {
+          if (legemidler.hent(i).hentId() == legemiddelNr) {
+            legemiddelet = legemidler.hent(i);
+          }
+        }
+
+        if (legemiddelet == null) {
+          System.out.println("Ugyldig legemiddel.");
+          System.out.println("Vil du prøve på nytt? ja/nei");
+          String fortsette = leggTil.next();
+
+          if (!fortsette.equals("ja") && !fortsette.equals("nei")) {
+            System.out.println("\nUgyldig input. Går tilbake til hovedmeny");
+
+            return;
+          }
+
+          if (fortsette.equals("ja")) {
+            brukerLeggTil();
+            return;
+          }
+
+          else {
+            //hovedmeny();
+            return;
+          }
+        }
+
+        try {
+          HvitResept hv = legen.skrivHvitResept(legemiddelet, pasienten, reit);
+
+          pasienten.leggTilResept(hv);
+
+          resepter.leggTil(hv);
+
+          System.out.println("Har lagt til resepten. Går tilbake til hovedmeny.");
+        }
+
+        catch (UlovligUtskrift e) {
+          System.out.println("Ulovlig input. Går tilbake til hovedmenyen.");
+          return;
+        }
+
+      }
+
+      else if (type.equals("blaa")) {
+        Lege legen = null;
+        Pasient pasienten = null;
+        Legemiddel legemiddelet = null;
+        int pasientID = 0;
+        int legemiddelNr = 0;
+        int reit = 0;
+
+
+        //skal finne legen
+
+        System.out.println("Skriv inn legens navn: ");
+        String legeNavn = leggTil.next();
+
+        System.out.println("Skriv inn pasientents id: ");
+        try {
+          pasientID = leggTil.nextInt();
+        }
+        catch (InputMismatchException e) {
+          System.out.println("Ugyldig input. Går tilbake til hovedmenyen.");
+          return;
+        }
+
+        System.out.println("Skriv inn legemiddelets nummer: ");
+
+
+        try {
+          legemiddelNr = leggTil.nextInt();
+        }
+        catch (InputMismatchException e) {
+          System.out.println("Ugyldig input. Går tilbake til hovedmenyen.");
+          return;
+        }
+
+        System.out.println("Skriv inn reiten: ");
+
+
+        try {
+          reit = leggTil.nextInt();
+        }
+        catch (InputMismatchException e) {
+          System.out.println("Ugyldig input. Går tilbake til hovedmenyen.");
+          return;
+        }
+
+
+        for (int i = 0; i < leger.stoerrelse(); i++) {
+          if (leger.hent(i).hentNavn().equals(legeNavn)) {
+            if (leger.hent(i) instanceof Spesialist) {
+              legen = leger.hent(i);
+              legen = (Spesialist) legen;
+            }
+            else {
+              legen = leger.hent(i);
+            }
+          }
+        }
+
+        if (legen == null) {
+          System.out.println("Ugyldig utskivende lege.");
+          System.out.println("Vil du prøve på nytt? ja/nei");
+          String fortsette = leggTil.next();
+
+          if (!fortsette.equals("ja") && !fortsette.equals("nei")) {
+            System.out.println("\nUgyldig input. Går tilbake til hovedmeny");
+
+            return;
+          }
+
+          if (fortsette.equals("ja")) {
+            brukerLeggTil();
+            return;
+          }
+
+          else {
+            //hovedmeny();
+            return;
+          }
+        }
+
+        //skal finne pasienten
+
+        for (int i = 0; i < pasienter.stoerrelse(); i++) {
+          if (pasienter.hent(i).hentPasientId() == pasientID) {
+            pasienten = pasienter.hent(i);
+          }
+        }
+
+        if (pasienten == null) {
+          System.out.println("Ugyldig pasient.");
+          System.out.println("Vil du prøve på nytt? ja/nei");
+          String fortsette = leggTil.next();
+
+          if (!fortsette.equals("ja") && !fortsette.equals("nei")) {
+            System.out.println("\nUgyldig input. Går tilbake til hovedmeny");
+
+            return;
+          }
+
+          if (fortsette.equals("ja")) {
+            brukerLeggTil();
+            return;
+          }
+
+          else {
+            //hovedmeny();
+            return;
+          }
+        }
+
+        //skal finne legemiddelet
+
+        for (int i = 0; i < legemidler.stoerrelse(); i++) {
+          if (legemidler.hent(i).hentId() == legemiddelNr) {
+            legemiddelet = legemidler.hent(i);
+          }
+        }
+
+        if (legemiddelet == null) {
+          System.out.println("Ugyldig legemiddel.");
+          System.out.println("Vil du prøve på nytt? ja/nei");
+          String fortsette = leggTil.next();
+
+          if (!fortsette.equals("ja") && !fortsette.equals("nei")) {
+            System.out.println("\nUgyldig input. Går tilbake til hovedmeny");
+
+            return;
+          }
+
+          if (fortsette.equals("ja")) {
+            brukerLeggTil();
+            return;
+          }
+
+          else {
+            //hovedmeny();
+            return;
+          }
+        }
+
+        try {
+          BlaaResept bl = legen.skrivBlaaResept(legemiddelet, pasienten, reit);
+
+          pasienten.leggTilResept(bl);
+
+          resepter.leggTil(bl);
+
+          System.out.println("Har lagt til resepten. Går tilbake til hovedmeny.");
+        }
+
+        catch (UlovligUtskrift e) {
+          System.out.println("Ulovlig input. Går tilbake til hovedmenyen.");
+          return;
+        }
+      }
+
+      else if (type.equals("militaer")) {
+        Lege legen = null;
+        Pasient pasienten = null;
+        Legemiddel legemiddelet = null;
+        int pasientID = 0;
+        int legemiddelNr = 0;
+        int reit = 0;
+
+        //skal finne legen
+
+        System.out.println("Skriv inn legens navn: ");
+        String legeNavn = leggTil.next();
+
+        System.out.println("Skriv inn pasientents id: ");
+        try {
+          pasientID = leggTil.nextInt();
+        }
+        catch (InputMismatchException e) {
+          System.out.println("Ugyldig input. Går tilbake til hovedmenyen.");
+          return;
+        }
+
+        System.out.println("Skriv inn legemiddelets nummer: ");
+
+
+        try {
+          legemiddelNr = leggTil.nextInt();
+        }
+        catch (InputMismatchException e) {
+          System.out.println("Ugyldig input. Går tilbake til hovedmenyen.");
+          return;
+        }
+
+        System.out.println("Skriv inn reiten: ");
+
+
+        try {
+          reit = leggTil.nextInt();
+        }
+        catch (InputMismatchException e) {
+          System.out.println("Ugyldig input. Går tilbake til hovedmenyen.");
+          return;
+        }
+
+
+        for (int i = 0; i < leger.stoerrelse(); i++) {
+          if (leger.hent(i).hentNavn().equals(legeNavn)) {
+            if (leger.hent(i) instanceof Spesialist) {
+              legen = leger.hent(i);
+              legen = (Spesialist) legen;
+            }
+            else {
+              legen = leger.hent(i);
+            }
+          }
+        }
+
+        if (legen == null) {
+          System.out.println("Ugyldig utskivende lege.");
+          System.out.println("Vil du prøve på nytt? ja/nei");
+          String fortsette = leggTil.next();
+
+          if (!fortsette.equals("ja") && !fortsette.equals("nei")) {
+            System.out.println("\nUgyldig input. Går tilbake til hovedmeny");
+
+            return;
+          }
+
+          if (fortsette.equals("ja")) {
+            brukerLeggTil();
+            return;
+          }
+
+          else {
+            //hovedmeny();
+            return;
+          }
+        }
+
+        //skal finne pasienten
+
+        for (int i = 0; i < pasienter.stoerrelse(); i++) {
+          if (pasienter.hent(i).hentPasientId() == pasientID) {
+            pasienten = pasienter.hent(i);
+          }
+        }
+
+
+        if (pasienten == null) {
+          System.out.println("Ugyldig pasient.");
+          System.out.println("Vil du prøve på nytt? ja/nei");
+          String fortsette = leggTil.next();
+
+          if (!fortsette.equals("ja") && !fortsette.equals("nei")) {
+            System.out.println("\nUgyldig input. Går tilbake til hovedmeny");
+
+            return;
+          }
+
+          if (fortsette.equals("ja")) {
+            brukerLeggTil();
+            return;
+          }
+
+          else {
+            //hovedmeny();
+            return;
+          }
+        }
+
+        //skal finne legemiddelet
+
+        for (int i = 0; i < legemidler.stoerrelse(); i++) {
+          if (legemidler.hent(i).hentId() == legemiddelNr) {
+            legemiddelet = legemidler.hent(i);
+          }
+        }
+
+
+        if (legemiddelet == null) {
+          System.out.println("Ugyldig legemiddel.");
+          System.out.println("Vil du prøve på nytt? ja/nei");
+          String fortsette = leggTil.next();
+
+          if (!fortsette.equals("ja") && !fortsette.equals("nei")) {
+            System.out.println("\nUgyldig input. Går tilbake til hovedmeny");
+
+            return;
+          }
+
+          if (fortsette.equals("ja")) {
+            brukerLeggTil();
+            return;
+          }
+
+          else {
+            //hovedmeny();
+            return;
+          }
+        }
+
+        try {
+          MilitaerResept ml = legen.skrivMilitaerResept(legemiddelet, pasienten, reit);
+
+          pasienten.leggTilResept(ml);
+
+          resepter.leggTil(ml);
+
+          System.out.println("Har lagt til resepten. Går tilbake til hovedmeny.");
+        }
+
+        catch (UlovligUtskrift e) {
+          System.out.println("Ulovlig input. Går tilbake til hovedmenyen.");
+          return;
+        }
+
+
+
+      }
+
+      else if (type.equals("p")) {
+        Lege legen = null;
+        Pasient pasienten = null;
+        Legemiddel legemiddelet = null;
+        int pasientID = 0;
+        int legemiddelNr = 0;
+        int reit = 0;
+
+        //skal finne legen
+
+        System.out.println("Skriv inn legens navn: ");
+        String legeNavn = leggTil.next();
+
+        System.out.println("Skriv inn pasientents id: ");
+        try {
+          pasientID = leggTil.nextInt();
+        }
+        catch (InputMismatchException e) {
+          System.out.println("Ugyldig input. Går tilbake til hovedmenyen.");
+          hovedmeny();
+        }
+
+        System.out.println("Skriv inn legemiddelets nummer: ");
+
+
+        try {
+          legemiddelNr = leggTil.nextInt();
+        }
+        catch (InputMismatchException e) {
+          System.out.println("Ugyldig input. Går tilbake til hovedmenyen.");
+          return;
+        }
+
+        System.out.println("Skriv inn reiten: ");
+
+        try {
+          reit = leggTil.nextInt();
+        }
+        catch (InputMismatchException e) {
+          System.out.println("Ugyldig input. Går tilbake til hovedmenyen.");
+          return;
+        }
+
+
+
+
+        for (int i = 0; i < leger.stoerrelse(); i++) {
+          if (leger.hent(i).hentNavn().equals(legeNavn)) {
+            if (leger.hent(i) instanceof Spesialist) {
+              legen = leger.hent(i);
+              legen = (Spesialist) legen;
+            }
+            else {
+              legen = leger.hent(i);
+            }
+          }
+        }
+
+
+        if (legen == null) {
+          System.out.println("Ugyldig utskivende lege.");
+          System.out.println("Vil du prøve på nytt? ja/nei");
+          String fortsette = leggTil.next();
+
+          if (!fortsette.equals("ja") && !fortsette.equals("nei")) {
+            System.out.println("\nUgyldig input. Går tilbake til hovedmeny");
+
+            return;
+          }
+
+          if (fortsette.equals("ja")) {
+            brukerLeggTil();
+            return;
+          }
+
+          else {
+            //hovedmeny();
+            return;
+          }
+        }
+
+        //skal finne pasienten
+
+        for (int i = 0; i < pasienter.stoerrelse(); i++) {
+          if (pasienter.hent(i).hentPasientId() == pasientID) {
+            pasienten = pasienter.hent(i);
+          }
+        }
+
+        if (pasienten == null) {
+          System.out.println("Ugyldig pasient.");
+          System.out.println("Vil du prøve på nytt? ja/nei");
+          String fortsette = leggTil.next();
+
+          if (!fortsette.equals("ja") && !fortsette.equals("nei")) {
+            System.out.println("\nUgyldig input. Går tilbake til hovedmeny");
+
+            return;
+          }
+
+          if (fortsette.equals("ja")) {
+            brukerLeggTil();
+            return;
+          }
+
+          else {
+            //hovedmeny();
+            return;
+          }
+        }
+
+        //skal finne legemiddelet
+
+        for (int i = 0; i < legemidler.stoerrelse(); i++) {
+          if (legemidler.hent(i).hentId() == legemiddelNr) {
+            legemiddelet = legemidler.hent(i);
+          }
+        }
+
+        if (legemiddelet == null) {
+          System.out.println("Ugyldig legemiddel.");
+          System.out.println("Vil du prøve på nytt? ja/nei");
+          String fortsette = leggTil.next();
+
+          if (!fortsette.equals("ja") && !fortsette.equals("nei")) {
+            System.out.println("\nUgyldig input. Går tilbake til hovedmeny");
+
+            return;
+          }
+
+          if (fortsette.equals("ja")) {
+            brukerLeggTil();
+            return;
+          }
+
+          else {
+            //hovedmeny();
+            return;
+          }
+        }
+
+        try {
+          PResept pr = legen.skrivPResept(legemiddelet, pasienten);
+
+          pasienten.leggTilResept(pr);
+
+          resepter.leggTil(pr);
+
+          System.out.println("Har lagt til resepten. Går tilbake til hovedmeny.");
+        }
+
+        catch (UlovligUtskrift e) {
+          System.out.println("Ulovlig input. Går tilbake til hovedmenyen.");
+          return;
+        }
+
+      }
+
+    }
+
+    else if (hva.equals("legemiddel")) {
+      System.out.println("Hvilken type vil du legge til? narkotisk/vanedannende/vanlig: ");
+      String type = leggTil.next();
+
+      if (!type.equals("narkotisk") && !type.equals("vanedannende") && !type.equals("vanlig")) {
+        System.out.println("\nUgyldig input. Går tilbake til hovedmeny");
+
+        return;
+      }
+
+      if (type.equals("narkotisk")) {
+        double pris = 0;
+        double virkestoff = 0;
+        int styrke = 0;
+
+
+        System.out.println("Skriv inn legemiddelets navn: ");
+        String navn = leggTil.next();
+
+        System.out.println("Skriv inn prisen: ");
+
+
+        try {
+          pris = leggTil.nextDouble();
+        }
+        catch (InputMismatchException e) {
+          System.out.println("Ugyldig input. Går tilbake til hovedmenyen.");
+          return;
+        }
+
+        System.out.println("Skriv inn virkestoff: ");
+        try {
+          virkestoff = leggTil.nextDouble();
+        }
+        catch (InputMismatchException e) {
+          System.out.println("Ugyldig input. Går tilbake til hovedmenyen.");
+          return;
+        }
+
+        System.out.println("Skriv inn styrke: ");
+        try {
+          styrke = leggTil.nextInt();
+        }
+        catch (InputMismatchException e) {
+          System.out.println("Ugyldig input. Går tilbake til hovedmenyen.");
+          return;
+        }
+
+        Narkotisk nark = new Narkotisk(navn, pris, virkestoff, styrke);
+        legemidler.leggTil(nark);
+
+        System.out.println("Har lagt til legemiddelet. Går tilbake til hovedmeny.");
+      }
+
+      else if (type.equals("vanedannende")) {
+        double pris = 0;
+        double virkestoff = 0;
+        int styrke = 0;
+
+        System.out.println("Skriv inn legemiddelets navn: ");
+        String navn = leggTil.next();
+
+        System.out.println("Skriv inn prisen: ");
+        try {
+          pris = leggTil.nextDouble();
+        }
+        catch (InputMismatchException e) {
+          System.out.println("Ugyldig input. Går tilbake til hovedmenyen.");
+          return;
+        }
+
+        System.out.println("Skriv inn virkestoff: ");
+        try {
+          virkestoff = leggTil.nextDouble();
+        }
+        catch (InputMismatchException e) {
+          System.out.println("Ugyldig input. Går tilbake til hovedmenyen.");
+          return;
+        }
+
+        System.out.println("Skriv inn styrke: ");
+        try {
+          styrke = leggTil.nextInt();
+        }
+        catch (InputMismatchException e) {
+          System.out.println("Ugyldig input. Går tilbake til hovedmenyen.");
+          return;
+        }
+
+
+        Vanedannende vane = new Vanedannende(navn, pris, virkestoff, styrke);
+        legemidler.leggTil(vane);
+
+        System.out.println("Har lagt til legemiddelet. Går tilbake til hovedmeny.");
+
+      }
+
+      else if (type.equals("vanlig")) {
+        double pris = 0;
+        double virkestoff = 0;
+        int styrke = 0;
+
+        System.out.println("Skriv inn legemiddelets navn: ");
+        String navn = leggTil.next();
+
+        System.out.println("Skriv inn prisen: ");
+
+        try {
+          pris = leggTil.nextDouble();
+        }
+        catch (InputMismatchException e) {
+          System.out.println("Ugyldig input. Går tilbake til hovedmenyen.");
+          return;
+        }
+
+        System.out.println("Skriv inn virkestoff: ");
+        try {
+          virkestoff = leggTil.nextDouble();
+        }
+        catch (InputMismatchException e) {
+          System.out.println("Ugyldig input. Går tilbake til hovedmenyen.");
+          return;
+        }
+
+        Vanlig van = new Vanlig(navn, pris, virkestoff);
+        legemidler.leggTil(van);
+
+        System.out.println("Har lagt til legemiddelet. Går tilbake til hovedmeny.");
+
+      }
+    }
+  }
+
+
+  public void skrivTilFil() throws FileNotFoundException {
+    Scanner fil = new Scanner(System.in);
+    System.out.println("Hva vil du kalle filen? ");
+    String filnavn = fil.next();
+    File filen = new File(filnavn);
+
+    PrintWriter pw = new PrintWriter(filen);
+
+    pw.append("\n# Pasienter (navn, fnr) \n");
+
+    for (Pasient pas : pasienter) {
+      String navn = pas.hentPasientNavn();
+      String fnr = pas.hentFoedselnummer();
+      pw.append("\n" + navn + "," + fnr + "\n");
+    }
+
+    pw.append("\n# Legemidler (navn, type, pris, virkestoff, [styrke])\n");
+
+    for (int i = 0; i < legemidler.stoerrelse(); i++) {
+      String navn = legemidler.hent(i).hentNavn();
+      String typen;
+      double pris = legemidler.hent(i).hentPris();
+      double virkestoff = legemidler.hent(i).hentVirkestoff();
+      int styrke = 0;
+
+      if (legemidler.hent(i) instanceof Narkotisk) {
+        typen = "narkotisk";
+        Narkotisk legemid1 = (Narkotisk) legemidler.hent(i);
+        styrke = legemid1.hentNarkotiskStyrke();
+        pw.append("\n" + navn + "," + typen + "," + pris + "," + virkestoff + "," + styrke + "\n");
+
+      }
+
+      else if (legemidler.hent(i) instanceof Vanedannende) {
+        typen = "vanedannende";
+        Vanedannende legemid2 = (Vanedannende) legemidler.hent(i);
+        styrke = legemid2.hentVanedannendeStyrke();
+        pw.append("\n" + navn + "," + typen + "," + pris + "," + virkestoff + "," + styrke + "\n");
+
+      }
+
+      else if (legemidler.hent(i) instanceof Vanlig) {
+        typen = "vanlig";
+        pw.append("\n" + navn + "," + typen + "," + pris + "," + virkestoff + "\n");
+
+      }
+
+    pw.append("\n# Leger (navn, kontrollid / 0 hvis vanlig lege)\n");
+
+    for (int p = 0; p < leger.stoerrelse(); p++) {
+      String navnet = leger.hent(p).hentNavn();
+      int kontrollid = 0;
+
+      if (leger.hent(p) instanceof Spesialist) {
+        Spesialist leg1 = (Spesialist) leger.hent(p);
+        kontrollid = leg1.hentKontrollID();
+      }
+
+      pw.append("\n" + navnet + "," + kontrollid + "\n");
+    }
+
+    pw.append("\n# Resepter (legemiddelNummer, legeNavn, pasientID, type, [reit])\n");
+
+    for (int t = 0; t < leger.stoerrelse(); t++) {
+      Lenkeliste<Resept> reseptene = leger.hent(t).hentReseptliste();
+      String legeNavn = leger.hent(t).hentNavn();
+
+      for (int o = 0; o < reseptene.stoerrelse(); o++) {
+        int legemiddelNr = reseptene.hent(o).hentLegemiddel().hentId();
+        int pasientID = reseptene.hent(o).hentPasient().hentPasientId();
+        String type;
+        int reit = 0;
+
+        if (reseptene.hent(o) instanceof HvitResept) {
+          type = "hvit";
+          reit = reseptene.hent(o).hentReit();
+
+          pw.append("\n" + legemiddelNr + "," + legeNavn + "," + pasientID + "," + type + "," + reit + "\n");
+
+        }
+
+        else if (reseptene.hent(o) instanceof MilitaerResept) {
+          type = "militaer";
+          reit = reseptene.hent(o).hentReit();
+
+          pw.append("\n" + legemiddelNr + "," + legeNavn + "," + pasientID + "," + type + "," + reit + "\n");
+
+        }
+
+        else if (reseptene.hent(o) instanceof BlaaResept) {
+          type = "blaa";
+          reit = reseptene.hent(o).hentReit();
+
+          pw.append("\n" + legemiddelNr + "," + legeNavn + "," + pasientID + "," + type + "," + reit + "\n");
+
+        }
+
+        else if (reseptene.hent(o) instanceof PResept) {
+          type = "p";
+
+          pw.append("\n" + legemiddelNr + "," + legeNavn + "," + pasientID + "," + type + "\n");
+
+        }
+      }
+    }
+    }
+  }
+
+}
