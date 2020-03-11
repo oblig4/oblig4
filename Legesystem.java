@@ -829,3 +829,72 @@ public void skrivUtInfo() {
       }
     }
 
+
+public void skrivUtInfo() {
+    //System.out.println(ignore.stoerrelse());
+
+    System.out.println("Skriver ut leger: ");
+    for (int i = 0; i < leger.stoerrelse(); i++) {
+      System.out.println(leger.hent(i));
+      System.out.println(leger.hent(i).hentReseptliste().stoerrelse());
+    }
+
+    System.out.println("\nSkriver ut pasienter og deres resepter: ");
+    for (int i = 0; i < pasienter.stoerrelse(); i++) {
+      System.out.println(pasienter.hent(i));
+      String reseptene = "\nRESEPTUTSKRIFT: \n";
+      Stabel<Resept> rListe = pasienter.hent(i).hentReseptListe();
+      //System.out.println(rListe.stoerrelse());
+
+
+      for (int o = 0; o < rListe.stoerrelse(); o++) {
+        if (rListe.hent(o) instanceof PResept) {
+          //System.out.println(rListe.hent(o));
+          reseptene += "\n" + rListe.hent(o) + "\n";
+        }
+        else if (rListe.hent(o) instanceof BlaaResept) {
+          //System.out.println(rListe.hent(o));
+          reseptene += "\n" + rListe.hent(o) + "\n";
+        }
+        else if (rListe.hent(o) instanceof MilitaerResept) {
+          //System.out.println(rListe.hent(o));
+          reseptene += "\n" + rListe.hent(o) + "\n";
+        }
+        else if (rListe.hent(o) instanceof HvitResept) {
+          //System.out.println(rListe.hent(o));
+          reseptene += "\n" + rListe.hent(o) + "\n";
+        }
+
+      }
+      if (reseptene.equals("\nRESEPTUTSKRIFT: \n")) {
+        reseptene = "";
+      }
+      System.out.println(reseptene);
+    }
+
+    System.out.println("\n Skriver ut legemiddler: ");
+    String legemidlene = "\nLEGEMIDDELUTSKRIFT: \n";
+    for (int i = 0; i < legemidler.stoerrelse(); i++) {
+
+
+      if (legemidler.hent(i) instanceof Vanlig) {
+        Vanlig legemidlerElement1 = (Vanlig) legemidler.hent(i);
+        //System.out.println(legemidler.hent(i));
+        legemidlene += "\n" + legemidler.hent(i) + "\n";
+      }
+
+      else if (legemidler.hent(i) instanceof Narkotisk) {
+        Narkotisk legemidlerElement2 = (Narkotisk) legemidler.hent(i);
+        //System.out.println(legemidler.hent(i));
+        legemidlene += "\n" + legemidler.hent(i) + "\n";
+      }
+
+      else if (legemidler.hent(i) instanceof Vanedannende) {
+        Vanedannende legemidlerElement3 = (Vanedannende) legemidler.hent(i);
+        //System.out.println(legemidler.hent(i));
+        legemidlene += "\n" + legemidler.hent(i) + "\n";
+      }
+    }
+    System.out.println(legemidlene);
+  }
+
