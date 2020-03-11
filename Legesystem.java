@@ -909,3 +909,28 @@ public void skrivUtInfo() {
     System.out.println(legemidlene);
   }
 
+
+
+
+
+
+
+
+    Lenkeliste<Resept> vanndanResept = new Lenkeliste<>();
+    Lenkeliste<Resept> narkoResept = new Lenkeliste<>();
+
+    for(Pasient pasient : pasienter){
+      for(Resept resept : pasient.hentReseptListe()){
+        if(resept.hentLegemiddel() instanceof Vanedannende){
+          vanndanResept.leggTil(resept);
+        }
+
+        else if(resept.hentLegemiddel() instanceof Narkotisk){
+          narkoResept.leggTil(resept);
+        }
+      }
+    }
+          
+    System.out.println("Totalt antall utskrevne resepter på vanedannende legemidler: " + vanndanResept.stoerrelse());
+    System.out.println("Totalt antall utskrevne resepter på narkotiske legemidler: " + narkoResept.stoerrelse());
+
