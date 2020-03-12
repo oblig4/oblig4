@@ -934,3 +934,18 @@ public void skrivUtInfo() {
     System.out.println("Totalt antall utskrevne resepter på vanedannende legemidler: " + vanndanResept.stoerrelse());
     System.out.println("Totalt antall utskrevne resepter på narkotiske legemidler: " + narkoResept.stoerrelse());
 
+
+
+
+import java.io.FileNotFoundException;
+import java.util.NoSuchElementException;
+import java.util.InputMismatchException;
+
+
+public class Hovedprogram {
+
+  public static void main(String[] args) throws FileNotFoundException, UlovligUtskrift, NumberFormatException, NoSuchElementException, InputMismatchException {
+    Legesystem legesystem = new Legesystem("test.txt");
+  }
+}
+
